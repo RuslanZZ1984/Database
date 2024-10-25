@@ -26,7 +26,8 @@ class Student(Base):
     # major_id - внешний ключ и ссылается на колонку id в таблице majors
     major_id: Mapped[int] = mapped_column(ForeignKey("majors.id"), nullable=False)
 
-    major: Mapped["Major"] = relationship("Major", back_populates="students")
+    # Почему то с этой строкой и прописанным роутом запрос не работает: http://127.0.0.1:8000/students/. Без неё норм.
+    # major: Mapped["Major"] = relationship("Major", back_populates="students")
 
     def __str__(self):
         return (f"{self.__class__.__name__}(id={self.id}, "
