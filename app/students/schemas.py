@@ -3,9 +3,10 @@
 from datetime import datetime, date
 from typing import Optional
 import re
-from pydantic import BaseModel, Field, EmailStr, validator, ConfigDict
+from pydantic import BaseModel, Field, EmailStr, validator, ConfigDict, field_validator
 
 
+# В документации форма запроса не показывает.
 class SStudent(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -21,14 +22,19 @@ class SStudent(BaseModel):
     special_notes: Optional[str] = Field(None, max_length=500,
                                          description="Дополнительные заметки, не более 500 символов")
 
-    @validator("phone_number")
-    def validate_phone_number(cls, value):
-        if not re.match(r'^\+\d{1,15}$', value):
-            raise ValueError('Номер телефона должен начинаться с "+" и содержать от 1 до 15 символов')
-        return value
-
-    @validator("date_of_birth")
-    def validate_date_of_birth(cls, value):
-        if value and value >= datetime.now().date():
-            raise ValueError('Дата рождения должна быть в прошлом')
-        return value
+    # Не работают оба, @validator - вообще зачеркивается IDE
+    # @validator("phone_number")
+    # # @field_validator("phone_number")
+    # @classmethod
+    # def validate_phone_number(cls, value):
+    #     # if not re.match(r'^\+\d{1,15}$', value):
+    #     #     raise ValueError('Номер телефона должен начинаться с "+" и содержать от 1 до 15 символов')
+    #     return value
+    #
+    # @validator("date_of_birth")
+    # # @field_validator("date_of_birth")
+    # @classmethod
+    # def validate_date_of_birth(cls, value):
+    #     if value and value >= datetime.now().date():
+    #         raise ValueError('Дата рождения должна быть в прошлом')
+    #     return value

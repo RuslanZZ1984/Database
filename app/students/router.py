@@ -5,12 +5,10 @@
 
 
 # APIRouter используется для создания маршрутов (routes) для API
-from fastapi import APIRouter
-from sqlalchemy import select
-
-from app.database import async_session_maker
+from fastapi import APIRouter, Depends
 from app.students.dao import StudentDAO
-from app.students.models import Student
+from app.students.rb import RBStudent
+from app.students.schemas import SStudent
 
 # from app.students.schemas import SStudent
 
@@ -20,13 +18,16 @@ from app.students.models import Student
 router = APIRouter(prefix='/students', tags=['Работа со студентами'])
 
 
-@router.get("/", summary="получить всех студентов")
-async def get_all_students():
-    async with async_session_maker() as session:
-        query = select(Student)
-        result = await session.execute(query)
-        students = result.scalars().all()
-        return students
+# # Это работает без response_model
+# @router.get("/", summary="получить всех студентов") #, response_model=list[SStudent])
+# async def get_all_students():
+#     return await StudentDAO.find_all()
+
+@router.get('/', summary="ПОлучить всех студентов")
+async def get_all_students(request_body: RBStudent = Depends()) -> list:  # list[SStudent]: - не работает SStudent
+    return await StudentDAO.find_all(**request_body.to_dict())
+# Параметры в документации выводятся с app.students.rb
+
 
 # @router.get("/", summary="Получить всех студентов", response_model=list[SStudent])
 # async def get_all_students():

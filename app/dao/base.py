@@ -6,14 +6,18 @@
 
 from sqlalchemy.future import select
 from app.database import async_session_maker
+# from app.students.models import Student
 
 
 class BaseDAO:
     model = None
 
     @classmethod
-    async def find_all_students(cls):
+    # async def find_all_students(cls, **filter_by):
+    async def find_all(cls, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model)
+            query = select(cls.model).filter_by(**filter_by)
             students = await session.execute(query)
             return students.scalars().all()
+
+# Метод find_all класса BaseDAO принимает неограниченное количество именованных аргументов через **filter_by
